@@ -67,7 +67,7 @@ def main():
         # 4. 저장
         filename = f"송장_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
         save_path = os.path.join(base_dir, filename)
-        playauto_df.to_excel(save_path, index=False, sheet_name="토글_송장출력")
+        playauto_df.to_excel(save_path, index=False, sheet_name="토글_송장출력" , engine="xlsxwriter")
         log.append(f"✅ 송장 파일 저장 완료: {filename}")
 
     except Exception as e:
