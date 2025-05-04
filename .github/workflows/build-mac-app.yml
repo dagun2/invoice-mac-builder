@@ -21,6 +21,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install py2app pandas openpyxl
+          pip install XlsxWriter
 
       - name: Build app
         run: python3 setup.py py2app
