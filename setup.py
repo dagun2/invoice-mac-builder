@@ -5,12 +5,10 @@ DATA_FILES = []
 OPTIONS = {
     'argv_emulation': True,
     'includes': [
-        'cmath', 'datetime', 'pytz',
-        'pandas._libs.tslibs.timestamps',
-        'pandas._libs.tslibs.nattype',
-        'pandas._libs.tslibs.timezones'
+        'datetime', 'pytz', 'unicodedata', 'cmath'
     ],
-    'packages': ['pandas', 'openpyxl'],
+    'packages': ['pandas', 'openpyxl', 'numpy', 'dateutil'],
+    'excludes': ['tkinter'],  # 충돌 방지용
     'plist': {
         'CFBundleName': '송장파일변환기',
         'CFBundleDisplayName': '송장파일변환기',
