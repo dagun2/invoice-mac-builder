@@ -22,6 +22,7 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install py2app pandas openpyxl
           pip install XlsxWriter
+          pip install xlrd>=2.0.1
 
       - name: Build app
         run: python3 setup.py py2app
