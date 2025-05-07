@@ -3,7 +3,9 @@ from setuptools import setup
 APP = ['invoice_run.py']  # 메인 파이썬 파일명
 DATA_FILES = []
 OPTIONS = {
-    'argv_emulation': True,
+    'argv_emulation': False,
+    'emulate_shell_environment': True,
+    'redirect_stdout_to_asl': True,
     'includes': [
         'datetime', 'pytz', 'unicodedata', 'cmath'
     ],
