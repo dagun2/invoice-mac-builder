@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import unicodedata
 from datetime import datetime
+import traceback
 
 def get_base_dir():
     if getattr(sys, 'frozen', False):
@@ -21,6 +22,7 @@ def find_excel_file(base_dir, prefix, ext, log):
 
 def main():
     log = []
+    error_log = ""
     try:
         base_dir = get_base_dir()
         log.append(f"현재 base_dir: {base_dir}")
@@ -65,19 +67,35 @@ def main():
         playauto_df["운송장번호"] = playauto_df.apply(find_invoice, axis=1).astype(str)
 
         # 4. 저장
-        filename = f"송장_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"송장_{timestamp}.xlsx"
         save_path = os.path.join(base_dir, filename)
-        playauto_df.to_excel(save_path, index=False, sheet_name="토글_송장출력" , engine="xlsxwriter")
+        playauto_df.to_excel(save_path, index=False, sheet_name="토글_송장출력", engine="xlsxwriter")
         log.append(f"✅ 송장 파일 저장 완료: {filename}")
 
     except Exception as e:
-        log.append(f"\n❌ 오류 발생: {str(e)}")
+        error_log += f"\n❌ 오류 발생: {str(e)}\n"
+        error_log += traceback.format_exc()
 
-    # 5. 로그 저장
-    log_filename = f"송장_{datetime.now().strftime('%Y%m%d_%H%M%S')}_log.txt"
-    log_path = os.path.join(get_base_dir(), log_filename)
+    # 5. 로그 저장 (홈 디렉토리)
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    home_dir = os.path.expanduser("~")
+
+    # 일반 로그
+    log_path = os.path.join(home_dir, f"송장_{timestamp}_log.txt")
     with open(log_path, "w", encoding="utf-8") as f:
         f.write("\n".join(log))
+
+    # 에러 로그
+    if error_log:
+        error_log_path = os.path.join(home_dir, "invoice_app_error_log.txt")
+        with open(error_log_path, "a", encoding="utf-8") as f:
+            f.write(f"\n[{timestamp}] 에러 발생 로그\n")
+            f.write(error_log)
+
+    # macOS 자동 로그 열기
+    if sys.platform == "darwin":
+        os.system(f"open '{log_path}'")
 
 if __name__ == "__main__":
     main()
