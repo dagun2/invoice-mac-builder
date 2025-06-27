@@ -61,16 +61,26 @@ def main():
                     condition &= (df_invoice_map[col_a] == val)
             match = df_invoice_map[condition]
             if not match.empty:
-                return match.iloc[0]["송장번호"]
-            return row.get("운송장번호", "")
+                return str(match.iloc[0]["송장번호"])
+            return str(row.get("운송장번호", ""))
 
-        playauto_df["운송장번호"] = playauto_df.apply(find_invoice, axis=1).astype(str)
+        playauto_df["운송장번호"] = playauto_df.apply(find_invoice, axis=1)
 
-        # 4. 저장
+        # 4. 저장 (텍스트 포맷으로 송장번호 저장)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f"송장_{timestamp}.xlsx"
         save_path = os.path.join(base_dir, filename)
-        playauto_df.to_excel(save_path, index=False, sheet_name="토글_송장출력", engine="xlsxwriter")
+
+        with pd.ExcelWriter(save_path, engine='xlsxwriter') as writer:
+            playauto_df.to_excel(writer, index=False, sheet_name="토글_송장출력")
+            workbook = writer.book
+            worksheet = writer.sheets["토글_송장출력"]
+
+            # 송장번호 열을 텍스트 형식으로 지정 (포맷: '@')
+            text_format = workbook.add_format({'num_format': '@'})
+            송장_col_idx = playauto_df.columns.get_loc("운송장번호")
+            worksheet.set_column(송장_col_idx, 송장_col_idx, 20, text_format)
+
         log.append(f"✅ 송장 파일 저장 완료: {filename}")
 
     except Exception as e:
